@@ -1,6 +1,5 @@
+//Proc.java
 package com.company;
-
-import java.util.Date;
 
 public class Proc {
 
@@ -13,6 +12,64 @@ public class Proc {
 //                  从栈中弹出元素直到遇到发现更低优先级的元素(或者栈为空)为止。
 //                  弹出完这些元素后，才将遇到的操作符压入到栈中。有一点需要注意，只有在遇到" ) "的情况下我们才弹出" ( "，其他情况我们都不会弹出" ( "。
 //            5）如果我们读到了输入的末尾，则将栈中所有元素依次弹出。
+
+    //检查中缀表达式格式
+    public static boolean check(String zhongzhui) {
+        int state = 0;//记录状态(0:”(“或数字；1：运算符或“)”)
+        int n1 = 0;//判断括号对应
+        String item = "";
+        zhongzhui = zhongzhui.trim();
+        while (!zhongzhui.equals("")) {
+            item = getFirstNumOrOperator(zhongzhui);
+//            System.out.println(item);
+            if (item.equals("error")) {
+                return false;
+            }
+            if (state == 0) {
+                if (!(item.equals("(") || (item.charAt(0) >= '0' && item.charAt(0) <= '9'))) {
+                    return false;
+                }
+                if (item.equals("(")) {
+                    n1++;
+                    state = 0;
+                } else {
+                    state = 1;
+                }
+            } else {
+
+                if (state == 1) {
+                    if (!(item.equals(")") || item.equals("+") || item.equals("-")
+                            || item.equals("*") || item.equals("/")
+                            || item.equals("++") || item.equals("--"))) {
+                        return false;
+                    }
+                    if (item.equals(")")) {
+                        n1--;
+                        state = 1;
+                        if (n1 < 0) {
+                            return false;
+                        }
+                    }
+                    if (item.equals("++") || item.equals("--")) {
+                        state = 1;
+                    }
+                    if (item.equals("+") || item.equals("-") || item.equals("*") || item.equals("/")) {
+                        state = 0;
+                    }
+                }
+            }
+
+            zhongzhui = zhongzhui.substring(item.length());
+            zhongzhui = zhongzhui.trim();
+        }
+
+        if (state != 1 || n1 != 0) {
+            return false;
+        }
+
+        return true;
+    }
+
 
     //    中缀表达式转化后缀表达式
     public static String transfor(String zhongzhui) {
@@ -89,7 +146,7 @@ public class Proc {
         String item = "";
         while (!houzhui.equals("")) {
             houzhui = houzhui.trim();
-            item=getFirstNumOrOperator(houzhui);
+            item = getFirstNumOrOperator(houzhui);
 
             if (item.equals("error")) {
                 System.out.println("出现错误，请检查表达式");
